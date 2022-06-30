@@ -8,9 +8,9 @@ import (
 func TestStack(t *testing.T) {
 	var stack Stack[int]
 	var v int
-	stack.Unpop(1)
-	stack.Unpop(2)
-	stack.Unpop(3)
+	stack.Push(1)
+	stack.Push(2)
+	stack.Push(3)
 	if !stack.Pop(&v) {
 		t.Fatal()
 	} else if v != 3 {
@@ -40,7 +40,7 @@ func TestStackRace(t *testing.T) {
 		i := i
 		go func() {
 			defer wg.Done()
-			stack.Unpop(i)
+			stack.Push(i)
 		}()
 	}
 	wg.Wait()
