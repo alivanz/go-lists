@@ -12,3 +12,7 @@ func cas[T any](p **T, old, new *T) bool {
 func load[T any](p **T) *T {
 	return (*T)(atomic.LoadPointer((*unsafe.Pointer)(unsafe.Pointer(p))))
 }
+
+func store[T any](p **T, v *T) {
+	atomic.StorePointer((*unsafe.Pointer)(unsafe.Pointer(p)), unsafe.Pointer(v))
+}

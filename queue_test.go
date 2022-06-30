@@ -8,7 +8,6 @@ import (
 func TestQueue(t *testing.T) {
 	var queue Queue[int]
 	var v int
-	queue.Init()
 	queue.Push(1)
 	queue.Push(2)
 	queue.Push(3)
@@ -34,9 +33,8 @@ func TestQueue(t *testing.T) {
 
 func TestQueueRace(t *testing.T) {
 	var queue Queue[int]
-	var v int
 	var wg sync.WaitGroup
-	queue.Init()
+	checks := make([]bool, 100)
 	wg.Add(100)
 	for i := 0; i < 100; i++ {
 		i := i
@@ -46,15 +44,22 @@ func TestQueueRace(t *testing.T) {
 		}()
 	}
 	wg.Wait()
-	var count int
-	for {
-		if queue.Pop(&v) {
-			count += 1
-		} else {
-			break
-		}
+	wg.Add(100)
+	for i := 0; i < 100; i++ {
+		go func() {
+			defer wg.Done()
+			var v int
+			if queue.Pop(&v) {
+				checks[v] = true
+			} else {
+				t.Fail()
+			}
+		}()
 	}
-	if count != 100 {
-		t.Fatal(count)
+	wg.Wait()
+	for i, v := range checks {
+		if !v {
+			t.Fatal(i)
+		}
 	}
 }
