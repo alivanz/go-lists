@@ -1,0 +1,2 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/alivanz/go-lists)](https://goreportcard.com/report/github.com/alivanz/go-lists)
+[![Build Status](https://github.com/alivanz/go-lists/actions/workflows/test.yml/badge.svg)](https://github.com/alivanz/go-lists/actions)
