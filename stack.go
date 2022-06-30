@@ -4,7 +4,7 @@ type Stack[T any] struct {
 	head *node[T]
 }
 
-func (stack *Stack[T]) Unpop(v T) {
+func (stack *Stack[T]) Push(v T) {
 	node := &node[T]{
 		v: v,
 	}
