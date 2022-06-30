@@ -6,8 +6,9 @@ import (
 )
 
 func TestQueue(t *testing.T) {
-	queue := NewQueue[int]()
+	var queue Queue[int]
 	var v int
+	queue.Init()
 	queue.Push(1)
 	queue.Push(2)
 	queue.Push(3)
@@ -32,9 +33,10 @@ func TestQueue(t *testing.T) {
 }
 
 func TestQueueRace(t *testing.T) {
-	queue := NewQueue[int]()
+	var queue Queue[int]
 	var v int
 	var wg sync.WaitGroup
+	queue.Init()
 	wg.Add(100)
 	for i := 0; i < 100; i++ {
 		i := i

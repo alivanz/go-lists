@@ -5,12 +5,10 @@ type Queue[T any] struct {
 	tail *node[T]
 }
 
-func NewQueue[T any]() *Queue[T] {
+func (queue *Queue[T]) Init() {
 	node := &node[T]{}
-	return &Queue[T]{
-		head: node,
-		tail: node,
-	}
+	cas(&queue.head, nil, node)
+	cas(&queue.tail, nil, node)
 }
 
 func (queue *Queue[T]) Push(v T) {
