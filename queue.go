@@ -1,21 +1,19 @@
 package lists
 
 type Queue[T any] struct {
-	head *node[T]
-	tail *node[T]
+	head atomic.Value
+	tail atomic.Value
 }
 
 func (queue *Queue[T]) Push(v T) {
-	node := &node[T]{
-		v: v,
-	}
+	node := &node[T]{v: v}
 	for {
-		tail := load(&queue.tail)
-		if cas(&queue.tail, tail, node) {
+		tail := queue.tail.Load().(node[T])
+		if queue.tail.CompareAndSwap(tail, node) {
 			if tail == nil {
-				store(&queue.head, node)
+				queue.head.Store(node)
 			} else {
-				store(&tail.next, node)
+				tail.next.Store(node)
 			}
 			return
 		}
@@ -24,12 +22,12 @@ func (queue *Queue[T]) Push(v T) {
 
 func (queue *Queue[T]) Pop(v *T) bool {
 	for {
-		head := load(&queue.head)
+		head := queue.head.Load().(node[T])
 		if head == nil {
 			return false
 		}
-		next := load(&head.next)
-		if cas(&queue.head, head, next) {
+		next := head.next.Load().(node[T])
+		if queue.head.CompareAndSwap(head, next) {
 			*v = head.v
 			return true
 		}

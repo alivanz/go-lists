@@ -1,17 +1,15 @@
 package lists
 
 type Stack[T any] struct {
-	head *node[T]
+	head atomic.Value
 }
 
 func (stack *Stack[T]) Push(v T) {
-	node := &node[T]{
-		v: v,
-	}
+	node := &node[T]{v: v}
 	for {
-		head := load(&stack.head)
+		head := stack.head.Load().(node[T])
 		node.next = head
-		if cas(&stack.head, head, node) {
+		if stack.head.CompareAndSwap(head, node) {
 			return
 		}
 	}
@@ -19,12 +17,12 @@ func (stack *Stack[T]) Push(v T) {
 
 func (stack *Stack[T]) Pop(v *T) bool {
 	for {
-		head := load(&stack.head)
+		head := stack.head.Load().(node[T])
 		if head == nil {
 			return false
 		}
-		next := load(&head.next)
-		if cas(&stack.head, head, next) {
+		next := head.next.Load().(node[T])
+		if stack.head.CompareAndSwap(head, next) {
 			*v = head.v
 			return true
 		}
