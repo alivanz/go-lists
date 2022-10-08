@@ -5,7 +5,8 @@
 
 lock-free / mutex-free and thread-safe lists written in Go
 
-Supports 1.18 generics. Does not require `package unsafe`.
+Supports 1.18 generics. 
+Does not require `package unsafe`.
 
 # Example
 

@@ -12,17 +12,17 @@ func TestStack(t *testing.T) {
 	stack.Push(2)
 	stack.Push(3)
 	if !stack.Pop(&v) {
-		t.Fatal()
+		t.Fatal("x")
 	} else if v != 3 {
 		t.Fatal(v)
 	}
 	if !stack.Pop(&v) {
-		t.Fatal()
+		t.Fatal("y")
 	} else if v != 2 {
 		t.Fatal(v)
 	}
 	if !stack.Pop(&v) {
-		t.Fatal()
+		t.Fatal("z")
 	} else if v != 1 {
 		t.Fatal(v)
 	}

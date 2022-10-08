@@ -1,19 +1,21 @@
 package lists
 
+import "sync/atomic"
+
 type Queue[T any] struct {
 	head atomic.Value
 	tail atomic.Value
 }
 
 func (queue *Queue[T]) Push(v T) {
-	node := &node[T]{v: v}
+	n := &node[T]{v: v}
 	for {
-		tail := queue.tail.Load().(node[T])
-		if queue.tail.CompareAndSwap(tail, node) {
+		tail := queue.tail.Load()
+		if queue.tail.CompareAndSwap(tail, n) {
 			if tail == nil {
-				queue.head.Store(node)
+				queue.head.Store(n)
 			} else {
-				tail.next.Store(node)
+				tail.(*node[T]).next.Store(n)
 			}
 			return
 		}
@@ -22,11 +24,19 @@ func (queue *Queue[T]) Push(v T) {
 
 func (queue *Queue[T]) Pop(v *T) bool {
 	for {
-		head := queue.head.Load().(node[T])
+		h := queue.head.Load()
+		if h == nil {
+			return false
+		}
+		head := h.(*node[T])
 		if head == nil {
 			return false
 		}
-		next := head.next.Load().(node[T])
+		n := head.next.Load()
+		var next *node[T]
+		if n != nil {
+			next = n.(*node[T])
+		}
 		if queue.head.CompareAndSwap(head, next) {
 			*v = head.v
 			return true
