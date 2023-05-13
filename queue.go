@@ -6,17 +6,21 @@ type Queue[T any] struct {
 }
 
 func (queue *Queue[T]) Push(v T) {
-	node := &node[T]{
+	n := &node[T]{
 		v: v,
 	}
 	for {
 		tail := load(&queue.tail)
-		if cas(&queue.tail, tail, node) {
-			if tail == nil {
-				store(&queue.head, node)
+		if tail == nil {
+			tail = new(node[T])
+			if cas(&queue.tail, nil, tail) {
+				store(&queue.head, tail)
 			} else {
-				store(&tail.next, node)
+				tail = load(&queue.tail)
 			}
+		}
+		if cas(&queue.tail, tail, n) {
+			store(&tail.next, n)
 			return
 		}
 	}
@@ -29,8 +33,11 @@ func (queue *Queue[T]) Pop(v *T) bool {
 			return false
 		}
 		next := load(&head.next)
+		if next == nil {
+			return false
+		}
 		if cas(&queue.head, head, next) {
-			*v = head.v
+			*v = next.v
 			return true
 		}
 	}

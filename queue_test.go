@@ -8,6 +8,9 @@ import (
 func TestQueue(t *testing.T) {
 	var queue Queue[int]
 	var v int
+	if queue.Pop(&v) {
+		t.Fatal()
+	}
 	queue.Push(1)
 	queue.Push(2)
 	queue.Push(3)
