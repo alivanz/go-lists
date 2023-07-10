@@ -1,8 +1,8 @@
 package lists
 
 type Queue[T any] struct {
-	head *node[T]
-	tail *node[T]
+	head Pointer[node[T]]
+	tail Pointer[node[T]]
 }
 
 func (queue *Queue[T]) Push(v T) {
@@ -10,17 +10,17 @@ func (queue *Queue[T]) Push(v T) {
 		v: v,
 	}
 	for {
-		tail := load(&queue.tail)
+		tail := queue.tail.Load()
 		if tail == nil {
 			tail = new(node[T])
-			if cas(&queue.tail, nil, tail) {
-				store(&queue.head, tail)
+			if queue.tail.CompareAndSwap(nil, tail) {
+				queue.head.Store(tail)
 			} else {
-				tail = load(&queue.tail)
+				tail = queue.tail.Load()
 			}
 		}
-		if cas(&queue.tail, tail, n) {
-			store(&tail.next, n)
+		if queue.tail.CompareAndSwap(tail, n) {
+			tail.next.Store(n)
 			return
 		}
 	}
@@ -28,15 +28,15 @@ func (queue *Queue[T]) Push(v T) {
 
 func (queue *Queue[T]) Pop(v *T) bool {
 	for {
-		head := load(&queue.head)
+		head := queue.head.Load()
 		if head == nil {
 			return false
 		}
-		next := load(&head.next)
+		next := head.next.Load()
 		if next == nil {
 			return false
 		}
-		if cas(&queue.head, head, next) {
+		if queue.head.CompareAndSwap(head, next) {
 			*v = next.v
 			return true
 		}

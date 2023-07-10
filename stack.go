@@ -1,7 +1,7 @@
 package lists
 
 type Stack[T any] struct {
-	head *node[T]
+	head Pointer[node[T]]
 }
 
 func (stack *Stack[T]) Push(v T) {
@@ -9,9 +9,9 @@ func (stack *Stack[T]) Push(v T) {
 		v: v,
 	}
 	for {
-		head := load(&stack.head)
-		node.next = head
-		if cas(&stack.head, head, node) {
+		head := stack.head.Load()
+		node.next.Store(head)
+		if stack.head.CompareAndSwap(head, node) {
 			return
 		}
 	}
@@ -19,12 +19,12 @@ func (stack *Stack[T]) Push(v T) {
 
 func (stack *Stack[T]) Pop(v *T) bool {
 	for {
-		head := load(&stack.head)
+		head := stack.head.Load()
 		if head == nil {
 			return false
 		}
-		next := load(&head.next)
-		if cas(&stack.head, head, next) {
+		next := head.next.Load()
+		if stack.head.CompareAndSwap(head, next) {
 			*v = head.v
 			return true
 		}

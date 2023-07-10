@@ -1,6 +1,6 @@
 package lists
 
 type node[T any] struct {
-	next *node[T]
+	next Pointer[node[T]]
 	v    T
 }
