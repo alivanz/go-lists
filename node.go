@@ -1,6 +1,8 @@
 package lists
 
+import "sync/atomic"
+
 type node[T any] struct {
-	next *node[T]
+	next atomic.Pointer[node[T]]
 	v    T
 }
