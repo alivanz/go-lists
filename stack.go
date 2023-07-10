@@ -1,9 +1,7 @@
 package lists
 
-import "sync/atomic"
-
 type Stack[T any] struct {
-	head atomic.Pointer[node[T]]
+	head Pointer[node[T]]
 }
 
 func (stack *Stack[T]) Push(v T) {

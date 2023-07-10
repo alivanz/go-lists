@@ -1,10 +1,8 @@
 package lists
 
-import "sync/atomic"
-
 type Queue[T any] struct {
-	head atomic.Pointer[node[T]]
-	tail atomic.Pointer[node[T]]
+	head Pointer[node[T]]
+	tail Pointer[node[T]]
 }
 
 func (queue *Queue[T]) Push(v T) {
